@@ -55,9 +55,10 @@ body::before{
 .wordmark{
   font-family:var(--serif);font-style:italic;font-size:64px;line-height:1;
   letter-spacing:-2px;margin-bottom:4px;
+  text-align: center;
 }
 .wordmark em{font-style:normal;color:var(--amber)}
-.tagline{font-size:11px;color:var(--ink3);letter-spacing:3px;text-transform:uppercase;margin-bottom:36px}
+.tagline{font-size:11px;color:var(--ink3);letter-spacing:3px;text-transform:uppercase;margin-bottom:36px; text-align: center;}
 
 /* tab switcher on auth */
 .auth-tabs{display:flex;gap:0;margin-bottom:28px;border-bottom:1px solid var(--brd)}
