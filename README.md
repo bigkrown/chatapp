@@ -34,7 +34,7 @@ A sleek, production-ready real-time chat application built with **Node.js + Expr
 
 
 
-**Demo** https://chatapp-five-coral.vercel.app/
+**Demo** https://thechatapp.up.railway.app/
 
 ---
 
