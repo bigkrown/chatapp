@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="Shola Adewale">
+<meta name="website" content="https://adesho.la">
+<title>RTCA — Real-Time Chat</title>
+<!--
+  RTCA — Real-Time Chat App
+  Author:  Shola Adewale
+  Website: https://adesho.la
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ═══ AUTH SCREENS ═══════════════════════════════════════════════════════════ -->
+<div id="auth-screen" class="screen">
+  <div class="auth-card">
+    <div class="wordmark">RT<em>.CA</em></div>
+    <div class="tagline">real-time · multi-room · instant</div>
+
+    <div class="auth-tabs">
+      <div class="auth-tab active" data-tab="login">Sign In</div>
+      <div class="auth-tab" data-tab="register">Create Account</div>
+    </div>
+
+    <!-- Login -->
+    <div id="panel-login" class="auth-panel active">
+      <div id="login-err" class="err-msg"></div>
+      <div class="field"><div class="field-label">Username</div><input id="l-user" class="fi" type="text" placeholder="your username" autocomplete="username" spellcheck="false"></div>
+      <div class="field"><div class="field-label">Password</div><input id="l-pass" class="fi" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="primary-btn" id="login-btn">SIGN IN</button>
+    </div>
+
+    <!-- Register -->
+    <div id="panel-register" class="auth-panel">
+      <div id="reg-err" class="err-msg"></div>
+      <div class="field"><div class="field-label">Username</div><input id="r-user" class="fi" type="text" placeholder="choose a username" autocomplete="off" spellcheck="false" maxlength="24"></div>
+      <div class="field"><div class="field-label">Password</div><input id="r-pass" class="fi" type="password" placeholder="min 4 characters" autocomplete="new-password"></div>
+      <div class="field"><div class="field-label">Confirm Password</div><input id="r-pass2" class="fi" type="password" placeholder="repeat password" autocomplete="new-password"></div>
+      <button class="primary-btn" id="reg-btn">CREATE ACCOUNT</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CREATE ROOM MODAL ═══════════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="create-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Create a Room</div>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <div id="cr-err" class="err-msg"></div>
+    <div class="field">
+      <div class="field-label">Room Name</div>
+      <input id="cr-name" class="fi" type="text" placeholder="e.g. Science Club" maxlength="32">
+    </div>
+    <div class="field">
+      <div class="field-label">Description <span style="color:var(--ink3);font-size:9px">(optional)</span></div>
+      <input id="cr-desc" class="fi" type="text" placeholder="What's this room about?" maxlength="80">
+    </div>
+    <div class="field">
+      <div class="field-label">Pick an Emoji</div>
+      <div class="emoji-row" id="emoji-row"></div>
+    </div>
+    <button class="primary-btn" id="cr-btn">CREATE ROOM</button>
+  </div>
+</div>
+
+<!-- ═══ APP ════════════════════════════════════════════════════════════════════ -->
+<div id="app">
+  <!-- Left sidebar -->
+  <div id="sl">
+    <div class="sl-head">
+      <div class="app-mark">RT<span>CA</span></div>
+      <div class="app-st"><div class="sdot"></div>live</div>
+    </div>
+    <div class="sec-lbl">Rooms</div>
+    <div class="room-nav" id="room-nav"></div>
+    <button class="create-room-btn" id="open-create"><span class="plus">＋</span> Create Room</button>
+    <div class="sl-foot">
+      <div class="my-av" id="my-av"></div>
+      <div class="my-inf">
+        <div class="my-name" id="my-name">—</div>
+        <div class="my-lbl">● connected</div>
+      </div>
+      <button class="logout-btn" id="logout-btn" title="Sign out">⏏</button>
+    </div>
+  </div>
+
+  <!-- Chat -->
+  <!-- Chat -->
+  <div id="cp">
+    <div class="cp-top">
+      <div class="cp-emoji" id="cp-emoji">🛋️</div>
+      <div class="cp-inf">
+        <div class="cp-name" id="cp-name">The Lounge</div>
+        <div class="cp-desc" id="cp-desc">Chill convos & general chat</div>
+      </div>
+      <div class="cp-meta"><div class="sdot"></div><span class="cp-online" id="cp-online">0</span> online</div>
+    </div>
+    <div id="cp-strip"></div>
+    <div id="msg-list" role="log" aria-live="polite"></div>
+    <div id="typ-zone"></div>
+    <div class="inp-dock">
+      <div class="efloat" id="efloat"></div>
+      <div id="mention-box">
+        <div class="mention-header">Mention a user</div>
+        <div id="mention-list"></div>
+      </div>
+      <div class="inp-shell">
+        <textarea id="ci" rows="1" placeholder="Message…" maxlength="1000"></textarea>
+        <button class="eq-btn" id="eq-tog">😊</button>
+        <button class="snd-btn" id="snd-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+    <button class="scr-fab" id="scr-fab">↓ New messages</button>
+  </div>
+
+  <!-- Right sidebar -->
+  <div id="sr">
+    <div class="sr-head">
+      <div class="sr-title">Online</div>
+      <div class="sr-count" id="sr-count">0</div>
+      <div class="sr-sub">in this room</div>
+    </div>
+    <div class="pres-list" id="pres-list"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+<script src="chat.js"></script>
+</body>
+</html>
