@@ -4,6 +4,13 @@ A sleek, production-ready real-time chat application built with **Node.js + Expr
 
 ---
 
+## 👤 Author
+
+**Shola Adewale**
+🌐 [adesho.la](https://adesho.la)
+
+---
+
 ## ✦ Features
 
 | Feature | Details |
@@ -164,8 +171,5 @@ Type `@` anywhere in the message box to trigger the mention system.
 
 ---
 
-## 👤 Author
 
-**Shola Adewale**
-🌐 [adesho.la](https://adesho.la)
 
