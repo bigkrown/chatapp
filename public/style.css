@@ -2,7 +2,6 @@
  *  Author: Shola Adewale <hello@adesho.la>
  *  Website: https://adesho.la
  */
-
 /* ═══ RESET & TOKENS ══════════════════════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -56,10 +55,9 @@ body::before{
 .wordmark{
   font-family:var(--serif);font-style:italic;font-size:64px;line-height:1;
   letter-spacing:-2px;margin-bottom:4px;
-  text-align: center;
 }
 .wordmark em{font-style:normal;color:var(--amber)}
-.tagline{font-size:11px;color:var(--ink3);letter-spacing:3px;text-transform:uppercase;margin-bottom:36px; text-align: center;}
+.tagline{font-size:11px;color:var(--ink3);letter-spacing:3px;text-transform:uppercase;margin-bottom:36px}
 
 /* tab switcher on auth */
 .auth-tabs{display:flex;gap:0;margin-bottom:28px;border-bottom:1px solid var(--brd)}
@@ -296,6 +294,31 @@ body::before{
 .pyou{font-size:9px;color:var(--amber);letter-spacing:.5px}
 .pdot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);flex-shrink:0}
 .pres-empty{text-align:center;padding:28px 14px;color:var(--ink3);font-size:11px;line-height:1.7}
+
+/* ─── Force-logout / session banner ──────────────────────────────────────────── */
+.session-banner{
+  position:fixed;inset:0;z-index:900;
+  background:rgba(0,0,0,.85);backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;
+  animation:fadeIn .2s ease both;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.session-card{
+  width:min(400px,92vw);
+  background:var(--surf);border:1px solid var(--red);border-radius:var(--r4);
+  padding:32px 28px;text-align:center;
+  box-shadow:0 24px 60px rgba(0,0,0,.7),0 0 0 1px rgba(242,107,107,.2);
+  animation:cardIn .35s var(--eSpr) both;
+}
+.session-icon{font-size:36px;margin-bottom:16px}
+.session-title{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--red)}
+.session-msg{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:24px}
+.session-btn{
+  background:var(--red);color:#fff;border:none;border-radius:var(--r2);
+  font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;padding:12px 28px;cursor:pointer;transition:all .15s;
+}
+.session-btn:hover{background:#ff8080;transform:translateY(-1px)}
 
 /* ─── @ Mention Autocomplete ──────────────────────────────────────────────── */
 #mention-box{

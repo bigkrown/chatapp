@@ -29,7 +29,7 @@ const SERVER_URL = (window.location.protocol === 'file:' || !window.location.hos
   ? 'http://localhost:3000' : window.location.origin;
 
 // ─── State ────────────────────────────────────────────────────────────────────
-let token = localStorage.getItem('relay_token');
+let token = localStorage.getItem('rtca_token');
 let myUser = null, socket = null, currentRoom = 'lounge';
 let allRooms = {};
 let typingTimer, typingUsers = new Map();
@@ -77,7 +77,7 @@ async function doRegister() {
     });
     const data = await res.json();
     if (!res.ok) { showErr('reg-err', data.error || 'Registration failed.'); return; }
-    localStorage.setItem('relay_token', data.token);
+    localStorage.setItem('rtca_token', data.token);
     token = data.token;
     connectChat('lounge');
   } catch(e) {
@@ -105,8 +105,15 @@ async function doLogin() {
       body: JSON.stringify({ username:u, password:p })
     });
     const data = await res.json();
-    if (!res.ok) { showErr('login-err', data.error || 'Login failed.'); return; }
-    localStorage.setItem('relay_token', data.token);
+    if (!res.ok) {
+      if (data.code === 'ALREADY_LOGGED_IN') {
+        showErr('login-err', '🔒 This account is already active in another tab or device. Sign out there first, or wait for that session to disconnect.');
+      } else {
+        showErr('login-err', data.error || 'Login failed.');
+      }
+      return;
+    }
+    localStorage.setItem('rtca_token', data.token);
     token = data.token;
     connectChat('lounge');
   } catch(e) {
@@ -117,17 +124,48 @@ async function doLogin() {
 }
 
 // ─── Logout ───────────────────────────────────────────────────────────────────
-document.getElementById('logout-btn').addEventListener('click', () => {
+document.getElementById('logout-btn').addEventListener('click', doLogout);
+
+async function doLogout() {
+  // tell server to clear active_login + session
+  if (token) {
+    try { await fetch(SERVER_URL + '/api/logout', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ token }) }); }
+    catch(_) {}
+  }
   if (socket) { socket.disconnect(); socket = null; }
-  localStorage.removeItem('relay_token');
+  localStorage.removeItem('rtca_token');
   token = null; myUser = null; allRooms = {};
+  returnToAuth();
+}
+
+function returnToAuth() {
   document.getElementById('app').classList.remove('active');
   document.getElementById('app').style.display = 'none';
   document.getElementById('auth-screen').classList.remove('hidden','gone');
   document.getElementById('auth-screen').style.display = '';
   document.getElementById('msg-list').innerHTML = '';
   document.getElementById('room-nav').innerHTML = '';
-});
+}
+
+// Session banner (force-logout / expiry)
+function showSessionBanner(icon, title, message, btnLabel='OK') {
+  // remove any existing banner first
+  document.querySelectorAll('.session-banner').forEach(b => b.remove());
+  const el = document.createElement('div');
+  el.className = 'session-banner';
+  el.innerHTML = `
+    <div class="session-card">
+      <div class="session-icon">${icon}</div>
+      <div class="session-title">${esc(title)}</div>
+      <div class="session-msg">${esc(message)}</div>
+      <button class="session-btn">${esc(btnLabel)}</button>
+    </div>`;
+  el.querySelector('.session-btn').addEventListener('click', () => {
+    el.remove();
+    returnToAuth();
+  });
+  document.body.appendChild(el);
+}
 
 // ─── Auto-login if token saved ────────────────────────────────────────────────
 if (token) connectChat('lounge');
@@ -135,14 +173,6 @@ if (token) connectChat('lounge');
 // ─── Connect + Socket ─────────────────────────────────────────────────────────
 function connectChat(startRoom) {
   socket = io(SERVER_URL, { auth: { token } });
-
-  socket.on('connect_error', err => {
-    // Token invalid — go back to login
-    if (err.message === 'Unauthorized') {
-      localStorage.removeItem('relay_token'); token = null;
-      showErr('login-err', 'Session expired. Please sign in again.');
-    }
-  });
 
   socket.on('connect', () => socket.emit('user:join', { roomId: startRoom }));
 
@@ -213,6 +243,31 @@ function connectChat(startRoom) {
 
   socket.on('message:reactions', ({ messageId, reactions }) => updateReactions(messageId, reactions));
   socket.on('disconnect', () => appendSysMsg('Connection lost…'));
+
+  // ── Force-logout: server kicked us (another device signed in) ────────────────
+  socket.on('force:logout', ({ reason }) => {
+    socket.disconnect();
+    localStorage.removeItem('rtca_token');
+    token = null; myUser = null;
+    showSessionBanner(
+      '⚠️',
+      'Signed out remotely',
+      reason || 'Your account was signed in from another location. You have been signed out here.',
+      'SIGN IN AGAIN'
+    );
+  });
+
+  // ── Account expired mid-session ───────────────────────────────────────────────
+  socket.on('connect_error', err => {
+    if (err.message === 'Unauthorized' || err.message === 'AccountExpired') {
+      localStorage.removeItem('rtca_token'); token = null;
+      const msg = err.message === 'AccountExpired'
+        ? 'Your session expired after 24 hours. Please sign in again.'
+        : 'Session expired. Please sign in again.';
+      showErr('login-err', msg);
+      returnToAuth();
+    }
+  });
 }
 
 // ─── Nav ──────────────────────────────────────────────────────────────────────
