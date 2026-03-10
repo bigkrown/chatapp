@@ -1,6 +1,4 @@
-# RELAY — Real-Time Chat App
-
-> Built by **[Shola Adewale](https://adesho.la)**
+# RTCA — Real-Time Chat App
 
 A sleek, production-ready real-time chat application built with **Node.js + Express + Socket.io**. Features user authentication, dynamic room creation, live presence, typing indicators, and emoji reactions — all with no build step.
 
