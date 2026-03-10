@@ -27,6 +27,10 @@ A sleek, production-ready real-time chat application built with **Node.js + Expr
 | **Auto-scroll** | Pins to bottom; floating button appears when scrolled up |
 | **Responsive** | 3-column → 2-column → single-column layout |
 
+
+
+**Demo** https://chatapp-five-coral.vercel.app/
+
 ---
 
 ## 🚀 Quick Start
@@ -51,7 +55,7 @@ Register an account on first visit. Open multiple browser tabs to test real-time
 ## 📁 File Structure
 
 ```
-relay-chat/
+chatapp/
 ├── server.js           # Express REST API + Socket.io backend
 ├── package.json
 ├── README.md
