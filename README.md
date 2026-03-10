@@ -34,7 +34,7 @@ A sleek, production-ready real-time chat application built with **Node.js + Expr
 
 
 
-**Demo** https://thechatapp.up.railway.app/
+**Demo** https://chatapp.adesho.la/
 
 ---
 
